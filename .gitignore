@@ -1,0 +1,23 @@
+# Ambientes virtuais
+.venv/
+venv/
+ENV/
+env/
+
+# Arquivos de cache
+__pycache__/
+*.py[cod]
+
+# Arquivos de log
+*.log
+
+# Configurações locais
+*.env
+.idea/
+.vscode/
+
+# Outras exclusões comuns
+*.egg-info/
+*.sqlite3
+.DS_Store
+
