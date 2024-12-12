@@ -20,4 +20,4 @@ __pycache__/
 *.egg-info/
 *.sqlite3
 .DS_Store
-
+downloads/*
