@@ -9,11 +9,9 @@ app = Flask(__name__,
             static_folder="../static", 
             template_folder="../templates")
 
-# Função para sanitizar nomes de arquivos e pastas
 def sanitize_filename(filename):
     return re.sub(r'[<>:"/\\|?*]', '_', filename)
 
-# Banco de dados SQLite
 def init_db():
     conn = sqlite3.connect('transcriptions.db')
     c = conn.cursor()
@@ -24,12 +22,10 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Página inicial
 @app.route("/")
 def home():
     return render_template("index.html")
 
-# Página de repositório
 @app.route("/repository")
 def repository():
     conn = sqlite3.connect('transcriptions.db')
@@ -39,7 +35,6 @@ def repository():
     conn.close()
     return render_template("repository.html", transcriptions=transcriptions)
 
-# Visualizar uma transcrição
 @app.route("/transcription/<int:id>")
 def view_transcription(id):
     conn = sqlite3.connect('transcriptions.db')
@@ -52,7 +47,6 @@ def view_transcription(id):
     else:
         return jsonify({"success": False, "error": "Transcrição não encontrada."}), 404
 
-# Processar link do YouTube
 @app.route("/process", methods=["POST"])
 def process_youtube():
     data = request.get_json()
@@ -61,13 +55,9 @@ def process_youtube():
         return jsonify({"success": False, "error": "URL do YouTube não fornecida."})
 
     try:
-        # Baixar áudio do YouTube
         output_file, video_title = download_audio(youtube_url)
-        # Transcrever áudio e gerar legendas
         transcript_file, subtitle_file = transcribe_audio_and_generate_subtitles(output_file, video_title)
-        # Salvar no banco de dados
         save_transcription_to_db(video_title, transcript_file)
-        # Retornar arquivos para o frontend
         return jsonify({
             "success": True,
             "audio_file": f"/download/audio/{sanitize_filename(video_title)}",
@@ -77,7 +67,6 @@ def process_youtube():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)})
 
-# Função para baixar áudio do YouTube
 def download_audio(youtube_url):
     output_folder = "downloads"
     os.makedirs(output_folder, exist_ok=True)
@@ -85,8 +74,13 @@ def download_audio(youtube_url):
         "format": "bestaudio/best",
         "outtmpl": os.path.join(output_folder, "%(title)s.%(ext)s"),
         "postprocessors": [
-            {"key": "FFmpegExtractAudio", "preferredcodec": "mp3", "preferredquality": "192"},
+            {
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+                "preferredquality": "192",
+            },
         ],
+        "ffmpeg_location": "C:/ffmpeg-7.1-full_build/bin/ffmpeg.exe"
     }
 
     try:
@@ -102,19 +96,16 @@ def download_audio(youtube_url):
     except Exception as e:
         raise Exception(f"Erro ao baixar ou converter áudio: {str(e)}")
 
-# Função para transcrever áudio e gerar legendas
 def transcribe_audio_and_generate_subtitles(audio_file, video_title):
     model = whisper.load_model("base")
     result = model.transcribe(audio_file)
     transcript_folder = os.path.join("downloads", video_title)
     os.makedirs(transcript_folder, exist_ok=True)
 
-    # Salvar transcrição
     transcript_file_path = os.path.join(transcript_folder, "transcription.txt")
     with open(transcript_file_path, "w", encoding="utf-8") as f:
         f.write(result["text"])
 
-    # Salvar legendas
     subtitle_file_path = os.path.join(transcript_folder, "subtitles.srt")
     with open(subtitle_file_path, "w", encoding="utf-8") as f:
         for i, segment in enumerate(result["segments"]):
@@ -126,7 +117,6 @@ def transcribe_audio_and_generate_subtitles(audio_file, video_title):
             f.write(f"{text}\n\n")
     return transcript_file_path, subtitle_file_path
 
-# Função para formatar tempo
 def format_time(seconds):
     hours = int(seconds // 3600)
     minutes = int((seconds % 3600) // 60)
@@ -134,7 +124,6 @@ def format_time(seconds):
     milliseconds = int((seconds % 1) * 1000)
     return f"{hours:02}:{minutes:02}:{seconds:02},{milliseconds:03}"
 
-# Salvar transcrição no banco de dados
 def save_transcription_to_db(title, transcript_file):
     with open(transcript_file, 'r', encoding="utf-8") as file:
         content = file.read()
@@ -144,7 +133,6 @@ def save_transcription_to_db(title, transcript_file):
     conn.commit()
     conn.close()
 
-# Inicializar banco e rodar servidor
-if __name__ == "_main_":
+if __name__ == "__main__":
     init_db()
     app.run(host="0.0.0.0", port=5000, debug=True)
