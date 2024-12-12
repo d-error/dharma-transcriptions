@@ -5,7 +5,9 @@ from flask import Flask, request, jsonify, send_file, render_template
 import yt_dlp
 import whisper
 
-app = Flask(_name_)
+app = Flask(__name__, 
+            static_folder="../static", 
+            template_folder="../templates")
 
 # Função para sanitizar nomes de arquivos e pastas
 def sanitize_filename(filename):
@@ -143,6 +145,6 @@ def save_transcription_to_db(title, transcript_file):
     conn.close()
 
 # Inicializar banco e rodar servidor
-if _name_ == "_main_":
+if __name__ == "_main_":
     init_db()
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=True)
