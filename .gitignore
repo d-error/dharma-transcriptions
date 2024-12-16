@@ -1,23 +1,63 @@
-# Ambientes virtuais
-.venv/
-venv/
-ENV/
-env/
-
-# Arquivos de cache
+# Python cache e arquivos compilados
 __pycache__/
-*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+*.db
 
-# Arquivos de log
-*.log
+# Pastas de virtual environment
+.env/
+.venv/
+env/
+venv/
+pip-log.txt
+pip-delete-this-directory.txt
 
-# Configurações locais
-*.env
-.idea/
+# Configurações de IDEs e editores
 .vscode/
+*.code-workspace
+.idea/
+*.iml
 
-# Outras exclusões comuns
-*.egg-info/
-*.sqlite3
+# Logs e arquivos temporários
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Arquivos gerados pelo sistema operacional
 .DS_Store
-downloads/*
+Thumbs.db
+
+# Arquivos de dependência
+poetry.lock
+*.egg-info/
+dist/
+build/
+*.egg
+MANIFEST
+
+# Modelos treinados e arquivos grandes
+trained_models/
+trained_models/*.pt
+trained_models/*.json
+
+# Arquivos de mídia
+downloads/
+downloads/*.mp3
+downloads/*.webm
+downloads/*.srt
+
+# Dados de treinamento
+TREINAMENTO/audio/
+TREINAMENTO/dados_brutos/
+TREINAMENTO/textos_corrigidos/
+TREINAMENTO/vocabulario/
+
+# Arquivos de configuração e metadados
+*.toml
+*.md~
+
+# Arquivos pessoais ou locais
+local_settings.py
+secrets.json
