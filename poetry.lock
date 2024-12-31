@@ -133,11 +133,6 @@ async = ["asgiref (>=3.2)"]
 dotenv = ["python-dotenv"]
 
 [[package]]
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> feat/dev-tools
 name = "iniconfig"
 version = "2.0.0"
 description = "brain-dead simple config-ini parsing"
@@ -149,10 +144,6 @@ files = [
 ]
 
 [[package]]
-<<<<<<< HEAD
->>>>>>> feat/dev-tools
-=======
->>>>>>> feat/dev-tools
 name = "itsdangerous"
 version = "2.2.0"
 description = "Safely pass data to untrusted environments and back."
@@ -251,11 +242,6 @@ files = [
 ]
 
 [[package]]
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> feat/dev-tools
 name = "mslex"
 version = "1.3.0"
 description = "shlex for windows"
@@ -402,10 +388,6 @@ files = [
 ]
 
 [[package]]
-<<<<<<< HEAD
->>>>>>> feat/dev-tools
-=======
->>>>>>> feat/dev-tools
 name = "six"
 version = "1.17.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -417,11 +399,6 @@ files = [
 ]
 
 [[package]]
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> feat/dev-tools
 name = "taskipy"
 version = "1.14.1"
 description = "tasks runner for python projects"
@@ -480,10 +457,6 @@ files = [
 ]
 
 [[package]]
-<<<<<<< HEAD
->>>>>>> feat/dev-tools
-=======
->>>>>>> feat/dev-tools
 name = "werkzeug"
 version = "3.1.3"
 description = "The comprehensive WSGI web application library."
@@ -537,12 +510,4 @@ test = ["pytest (>=8.1,<9.0)", "pytest-rerunfailures (>=14.0,<15.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "3.12.7"
-<<<<<<< HEAD
-<<<<<<< HEAD
-content-hash = "77529a5708afaf4530cbe04cbe955aadf33e667c9c1b9e7bae4d3f37c4335c70"
-=======
 content-hash = "8616fed435c319329fc9e912ccd65e1797d26dff62273442d0dc20d4e5205488"
->>>>>>> feat/dev-tools
-=======
-content-hash = "8616fed435c319329fc9e912ccd65e1797d26dff62273442d0dc20d4e5205488"
->>>>>>> feat/dev-tools
