@@ -1,0 +1,56 @@
+<!-- templates/index.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Transcrição de Vídeos do YouTube</h1>
+    <form id="youtube-form" onsubmit="processVideo(event)">
+        <label for="youtube_url">Insira o link do YouTube:</label>
+        <input type="text" id="youtube-url" name="youtube_url" placeholder="URL do vídeo" required>
+        <button type="submit">Processar</button>
+    </form>
+    <div id="status" style="margin-top: 20px; color: white;"></div>
+    <div id="links" style="display: none; margin-top: 20px;">
+        <a id="audio-link" href="#" download style="display: block; margin-bottom: 10px;">Baixar Áudio</a>
+        <a id="transcript-link" href="#" download style="display: block; margin-bottom: 10px;">Baixar Transcrição</a>
+        <a id="subtitle-link" href="#" download style="display: block;">Baixar Legendas</a>
+    </div>
+</div>
+{% endblock %}
+
+<script>
+    function processVideo(event) {
+        event.preventDefault(); // Previne o envio tradicional do formulário
+        const youtubeUrl = document.getElementById("youtube-url").value;
+        const statusDiv = document.getElementById("status");
+        const linksDiv = document.getElementById("links");
+
+        statusDiv.textContent = "Processando o vídeo. Aguarde...";
+        linksDiv.style.display = "none"; // Oculta os links enquanto processa
+
+        fetch("/process", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ youtube_url: youtubeUrl })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                statusDiv.textContent = "Processamento concluído! Links disponíveis abaixo:";
+                document.getElementById("audio-link").href = data.audio_file;
+                document.getElementById("transcript-link").href = data.transcript_file;
+                document.getElementById("subtitle-link").href = data.subtitle_file;
+                linksDiv.style.display = "block"; // Exibe os links
+            } else {
+                statusDiv.textContent = "Erro: " + data.error;
+            }
+        })
+        .catch(error => {
+            statusDiv.textContent = "Erro ao processar o vídeo. Tente novamente.";
+            console.error("Erro ao processar o vídeo:", error);
+        });
+    }
+</script>
+

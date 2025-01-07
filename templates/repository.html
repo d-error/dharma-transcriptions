@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Repositório de Transcrições</h1>
+    <ul>
+        {% for id, title in transcriptions %}
+        <li>
+            <a href="{{ url_for('view_transcription', id=id) }}">{{ title }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
