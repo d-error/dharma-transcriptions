@@ -8,6 +8,9 @@ from dharma_transcriptions.utils import sanitize_filename
 def download_audio(youtube_url):
     output_folder = 'downloads'
     os.makedirs(output_folder, exist_ok=True)
+
+    ffmpeg_location = os.environ.get('FFMPEG_LOCATION')
+
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': os.path.join(output_folder, '%(title)s.%(ext)s'),
@@ -18,7 +21,7 @@ def download_audio(youtube_url):
                 'preferredquality': '192',
             },
         ],
-        'ffmpeg_location': 'C:/PATH_Programs/ffmpeg.exe',
+        'ffmpeg_location': ffmpeg_location,
     }
 
     try:
@@ -34,6 +37,6 @@ def download_audio(youtube_url):
             )
             os.rename(downloaded_file, audio_file)
 
-            return audio_file, sanitized_title
+            return audio_file  # Retorna apenas o caminho do arquivo
     except Exception as e:
-        raise Exception(f'Erro ao baixar ou converter áudio: {str(e)}')
+        raise Exception(f'Erro ao baixar ou converter áudio: {str(e)}') from e
