@@ -1,5 +1,4 @@
 import os
-import re
 
 import torch
 import whisper
@@ -68,7 +67,7 @@ def fine_tune_model(model, brutos_dir, corrigidos_dir):
                     ) as corrigido_file,
                 ):
                     bruto_text = bruto_file.read()
-                    corrigido_text = process_file(corrigido_file.read())
+                    corrigido_text = corrigido_file.read()
 
                 # Carregar áudio bruto como mel-espectrograma
                 audio_tensor = whisper.log_mel_spectrogram(
@@ -150,39 +149,6 @@ def save_finetuned_model(model):
     os.makedirs(os.path.dirname(TRAINED_MODEL_PATH), exist_ok=True)
     torch.save(model.state_dict(), TRAINED_MODEL_PATH)
     print(f'[INFO] Modelo treinado salvo em: {TRAINED_MODEL_PATH}')
-
-
-def remove_timestamps(text):
-    """Removes timestamps from a text string.
-
-    Args:
-        text: The input text containing timestamps.
-
-    Returns:
-        The text with timestamps removed.
-
-    """
-    cleaned_text = re.sub(
-        r'\[\d+\.\d+ --> \d+\.\d+\]', '', text
-    )  # Removes timestamps
-    cleaned_text = re.sub(
-        r'\[\d+:\d+:\d+\.\d+ --> \d+:\d+:\d+\.\d+\]', '', cleaned_text
-    )  # Removes other timestamps formats (HH:MM:SS.mmm --> HH:MM:SS.mmm)
-
-    if cleaned_text.strip() == text.strip():
-        return text
-
-    return cleaned_text.strip()
-
-
-def process_file(filepath):
-    with open(filepath, 'r', encoding='utf-8') as f:
-        text = f.read()
-
-    cleaned_text = remove_timestamps(text)
-
-    with open(filepath, 'w', encoding='utf-8') as f:
-        f.write(cleaned_text)
 
 
 if __name__ == '__main__':
