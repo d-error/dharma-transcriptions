@@ -5,24 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Transcrição de Vídeos{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <header>
-        <nav>
+        <nav class="sidebar">
             <ul>
-                <li><a href="{{ url_for('home') }}">Início</a></li>
-                <li><a href="{{ url_for('repository') }}">Repositório</a></li>
+                <li><a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="{{ url_for('repository') }}"><i class="fas fa-book"></i> Biblioteca Colaborativa</a></li>
+                <li><a href="{{ url_for('apoie') }}"><i class="fas fa-hands-helping"></i> Apoie</a></li>
+                <li><a href="#"><i class="fas fa-envelope"></i> Contato</a></li>
             </ul>
-            <a href="/">Início</a>
-            <a href="/repository">Repositório</a>
         </nav>
     </header>
     <main>
         {% block content %}{% endblock %}
     </main>
-    <footer>
-        <p>© 2024 Transcrições do Dharma. Todos os direitos reservados.</p>
-    </footer>
+   
 </body>
 </html>
-
