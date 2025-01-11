@@ -1,151 +1,67 @@
-/* Geral */
 body {
-    margin: 0;
+    background-color: #121212;
+    color: #fff;
     font-family: Arial, sans-serif;
-    background-color: #ebeaea;
-    color: #020202;
-    display: flex;
 }
 
-/* Sidebar */
-.sidebar {
-    width: 250px;
-    height: 100vh;
-    background: linear-gradient(180deg, #1f1f1f, #292929);
-    color: #fff;
-    position: fixed;
-    top: 0;
-    left: 0;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 30px;
-    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-}
-
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-}
-
-.sidebar ul li {
-    width: 100%;
-    margin: 10px 0;
-}
-
-.sidebar ul li a {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 20px;
-    color: #fff;
+header nav a {
+    color: #ff4d4d;
     text-decoration: none;
-    font-size: 1rem;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin: 0 15px;
 }
 
-.sidebar ul li a:hover {
-    background-color: #831C31;
-    transform: translateX(5px);
+header nav a:hover {
+    color: #e60000;
+    text-decoration: underline;
 }
 
-/* Conteúdo Principal */
-main {
-    margin-left: 15%;
-    padding: 42px;
-    padding-top: 2px;
-    width: calc(100% - 250px);
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+header nav a:focus {
+    outline: 2px dashed #ff4d4d;
+    outline-offset: 4px;
 }
 
-/* Título */
-h1 {
-    text-align: center;
-    font-family: 'Dancing Script', cursive;
-    font-size: 2.8rem;
-    margin-bottom: 20px;
-    color: #831C31;
-}
-
-/* Caixa de Conteúdo */
-.content-box {
-    background-color: #c0c0c0;
-    padding: 30px;
-    border-radius: 10px;
+.container {
+    padding: 20px;
     max-width: 800px;
+    margin: 0 auto;
     width: 100%;
-    box-shadow: 0 4px 8px #c0c0c0;
-    margin-bottom: 30px;
+    box-sizing: border-box;
 }
 
-/* Parágrafos */
-.content-box p {
-    margin-bottom: 15px;
-    line-height: 1.6;
-    font-size: 1rem;
-    text-align: justify;
-}
-
-/* Formulário Integrado */
-.content-box form {
-    margin-top: 5%;
-    background-color: #c0c0c0;
+form {
+    background-color: #1c1c1c;
     padding: 20px;
     border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
 }
 
-.content-box form label {
+form input[type="text"] {
     width: 100%;
-    text-align: left;
-    margin-bottom: 10px;
-    font-size: 1rem;
-    color: #979696;
-}
-
-.content-box form input[type="text"] {
-    flex: 1;
-    min-width: 70%;
     padding: 10px;
+    margin: 10px 0;
     border: none;
     border-radius: 5px;
-    background-color: #8f8f8f; /* Cinza claro */
-    color: #000; /* Texto preto */
-    font-size: 1rem;
+    background-color: #333;
+    color: #fff;
 }
 
-.content-box form input[type="text"]::placeholder {
-    color: #666; /* Cinza escuro para o placeholder */
-}
-
-.content-box form button {
-    background-color: #831C31;
-    color: #fff; /* Texto  */
+form button {
+    background-color: #ff4d4d;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
-    font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.content-box form button:hover {
-    background-color: #831C31;
+form button:hover {
+    background-color: #e60000;
 }
 
-/* Status */
+form button:focus {
+    outline: 2px dashed #ff4d4d;
+    outline-offset: 4px;
+}
+
 #status {
     margin-top: 20px;
     padding: 10px;
@@ -156,38 +72,10 @@ h1 {
     display: none;
 }
 
-/* Links Pós-Processamento */
-#links {
+footer {
+    text-align: center;
     margin-top: 20px;
-    text-align: center;
-}
-
-#links a {
-    display: block;
-    margin: 5px 0;
-    color: #831C31;
-    text-decoration: none;
-    font-size: 1rem;
-}
-
-links a:hover {
-    text-decoration: underline;
-}
-
-/* Estilos para Apoie */
-main {
-    padding: 40px 5%;
-    text-align: center;
-}
-
-.support-section {
-    margin-top: 30px;
-}
-
-.support-button {
-    background-color: #831C31;
+    padding: 10px;
+    background-color: #1c1c1c;
     color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
 }
