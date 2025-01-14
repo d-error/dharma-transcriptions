@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from dharma_transcriptions.whisper_transcriber import WhisperTranscriber
+from dharma_transcriptions.whisper_core import load_model
 from dharma_transcriptions.youtube import download_audio
 
 # Caminho base absoluto
@@ -14,12 +14,11 @@ BRUTOS_PATH = os.path.join(BASE_PATH, 'dados_brutos')
 CORRIGIDOS_PATH = os.path.join(BASE_PATH, 'textos_corrigidos')
 
 # Instancia o transcritor Whisper
-whisper_transcriber = WhisperTranscriber(model_name='base')
+whisper_transcriber = load_model(True)
 
 
 def validate_and_download_audio():
-    """
-    Valida os arquivos em 'referencia_corrigida', baixa os áudios
+    """Valida os arquivos em 'referencia_corrigida', baixa os áudios
     e move para a pasta 'audio'.
     """
     print('[INFO] Validando e baixando áudios...')
@@ -77,13 +76,11 @@ def validate_and_download_audio():
 
 
 def prepare_data_for_training(pairs):
-    """
-    Prepara os pares de dados para o treinamento:
+    """Prepara os pares de dados para o treinamento:
     - Gera transcrições brutas, se necessário.
     - Move para a pasta correta.
     """
     for txt_file, audio_file in pairs:
-        txt_path = os.path.join(REFERENCE_PATH, txt_file)
         audio_path = os.path.join(AUDIO_PATH, audio_file)
 
         print(
@@ -99,7 +96,7 @@ def prepare_data_for_training(pairs):
             print(f'[INFO] Gerando transcrição bruta para: {audio_file}')
             try:
                 os.makedirs(BRUTOS_PATH, exist_ok=True)
-                transcription, segments = whisper_transcriber.transcribe_audio(
+                transcription = whisper_transcriber.transcribe_audio(
                     audio_path
                 )
 
@@ -115,9 +112,7 @@ def prepare_data_for_training(pairs):
 
 
 def start_training():
-    """
-    Inicia o processo de treinamento usando os dados organizados.
-    """
+    """Inicia o processo de treinamento usando os dados organizados."""
     print('[INFO] Validando e baixando áudios...')
     pairs = validate_and_download_audio()
 
