@@ -1,4 +1,5 @@
 import os
+from dharma_transcriptions.config import Config
 
 import yt_dlp
 
@@ -6,7 +7,7 @@ from dharma_transcriptions.utils import sanitize_filename
 
 
 def download_audio(youtube_url):
-    output_folder = 'downloads'
+    output_folder = Config.OUTPUT_FOLDER
     os.makedirs(output_folder, exist_ok=True)
 
     ffmpeg_location = os.environ.get('FFMPEG_LOCATION')
