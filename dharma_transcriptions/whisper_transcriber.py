@@ -1,31 +1,13 @@
 import os
 
-import torch
-import whisper
+from dharma_transcriptions.whisper_core import load_model
 
 # Caminho do modelo treinado
 TRAINED_MODEL_PATH = os.path.join('trained_models', 'whisper_finetuned.pt')
 
 
-def load_finetuned_model():
-    """
-    Carrega o modelo Whisper treinado (fine-tuned).
-    """
-    if not os.path.exists(TRAINED_MODEL_PATH):
-        raise FileNotFoundError(
-            f'Modelo treinado não encontrado: {TRAINED_MODEL_PATH}'
-        )
-
-    print('[INFO] Carregando modelo treinado...')
-    model = whisper.load_model('base')
-    model.load_state_dict(torch.load(TRAINED_MODEL_PATH))
-    print('[INFO] Modelo treinado carregado com sucesso.')
-    return model
-
-
 def transcribe_with_finetuned_model(audio_path, output_dir):
-    """
-    Transcreve o áudio usando o modelo treinado e salva os resultados.
+    """Transcreve o áudio usando o modelo treinado e salva os resultados.
 
     Args:
         audio_path (str): Caminho para o arquivo de áudio.
@@ -43,7 +25,7 @@ def transcribe_with_finetuned_model(audio_path, output_dir):
     os.makedirs(output_dir, exist_ok=True)
 
     # Carregar o modelo treinado
-    model = load_finetuned_model()
+    model = load_model(True)
 
     print(f'[INFO] Transcrevendo o áudio: {audio_path}...')
     result = model.transcribe(audio_path, fp16=False)
@@ -72,8 +54,7 @@ def transcribe_with_finetuned_model(audio_path, output_dir):
 
 
 def format_time(seconds):
-    """
-    Converte tempo em segundos para o formato SRT (HH:MM:SS,mmm).
+    """Converte tempo em segundos para o formato SRT (HH:MM:SS,mmm).
 
     Args:
         seconds (float): Tempo em segundos.
@@ -89,14 +70,16 @@ def format_time(seconds):
 
 
 if __name__ == '__main__':
-    # Exemplo de uso
-    audio_path = os.path.join(
-        'dharma_transcriptions',
-        'TREINAMENTO',
-        'audio',
-        'Prece das Sete Linhas.mp3',
+    current_dir = os.path.dirname(__file__)
+
+    audio_path = os.path.abspath(
+        os.path.join(
+            current_dir, 'TREINAMENTO', 'audio', 'Prece das Sete Linhas.mp3'
+        )
     )
-    output_dir = 'TREINAMENTO/output'
+    output_dir = os.path.abspath(
+        os.path.join(current_dir, 'TREINAMENTO', 'output')
+    )
 
     try:
         results = transcribe_with_finetuned_model(audio_path, output_dir)
