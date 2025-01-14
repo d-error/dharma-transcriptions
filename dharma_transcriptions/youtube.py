@@ -29,7 +29,7 @@ def download_audio(youtube_url):
             info_dict = ydl.extract_info(youtube_url, download=True)
             raw_title = info_dict.get('title', 'arquivo_desconhecido')
             sanitized_title = sanitize_filename(raw_title)
-            audio_file = os.path.join(output_folder, f'{sanitized_title}.mp3')
+            audio_file = os.path.join(output_folder, f'{sanitized_title}.mp3') #TODO aqui que ele grava na pasta /downloads, mudar pra pasta do sistema
 
             # Renomeie o arquivo após o download e sanitização
             downloaded_file = ydl.prepare_filename(info_dict).replace(
@@ -37,6 +37,6 @@ def download_audio(youtube_url):
             )
             os.rename(downloaded_file, audio_file)
 
-            return audio_file  # Retorna apenas o caminho do arquivo
+            return audio_file, sanitized_title  # Retorna apenas o caminho do arquivo
     except Exception as e:
         raise Exception(f'Erro ao baixar ou converter áudio: {str(e)}') from e
