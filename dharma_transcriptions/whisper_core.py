@@ -1,11 +1,12 @@
 import os
+from dharma_transcriptions.config import Config
 
 import torch
 import whisper
 
 
 def load_model(fine_tuned=False):
-    model = whisper.load_model('base')
+    model = whisper.load_model(Config.WHISPER_MODEL)
 
     if fine_tuned:
         """
