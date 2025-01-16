@@ -21,17 +21,17 @@ def load_model(fine_tuned=False):
             print('[INFO] Carregando modelo treinado...')
             model.load_state_dict(torch.load(TRAINED_MODEL_PATH))
             print('[INFO] Modelo treinado carregado com sucesso.')
-
+            return model
+        
         except FileNotFoundError:
             print (
                 f'[WARNING] Modelo treinado não encontrado em: {TRAINED_MODEL_PATH}. Usando modelo padrão'
             )
-            turn_required_grads(model)
+            return turn_required_grads(model)
 
-        
-        return model
+              
     else:
-        turn_required_grads(model)
+        return turn_required_grads(model)
         
 def turn_required_grads(model):
         """
@@ -39,6 +39,8 @@ def turn_required_grads(model):
     """
         print(f'[INFO] Carregando o modelo Whisper {Config.WHISPER_MODEL} ...')
         # Habilitar cálculo de gradientes para ajuste fino
+        #TODO: testar se ele realmente está alterando esses parametros pra True
+        # e verificar o que significa isso. (Diego)
         for param in model.parameters():
             param.requires_grad = True
 
@@ -46,4 +48,4 @@ def turn_required_grads(model):
         return model
 
 if __name__=='__main__':
-     load_model(True)
+     model = load_model(True)
