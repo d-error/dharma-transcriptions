@@ -7,32 +7,43 @@ import whisper
 
 def load_model(fine_tuned=False):
     model = whisper.load_model(Config.WHISPER_MODEL)
+    BASE_PATH = Config.BASE_PATH
 
     if fine_tuned:
         """
     Carrega o modelo Whisper treinado (fine-tuned).
     """
-        TRAINED_MODEL_PATH = os.path.join(
+        TRAINED_MODEL_PATH = os.path.join(BASE_PATH,
             'trained_models', 'whisper_finetuned.pt'
         )
 
-        if not os.path.exists(TRAINED_MODEL_PATH):
-            raise FileNotFoundError(
-                f'Modelo treinado não encontrado: {TRAINED_MODEL_PATH}'
-            )
+        try: 
+            print('[INFO] Carregando modelo treinado...')
+            model.load_state_dict(torch.load(TRAINED_MODEL_PATH))
+            print('[INFO] Modelo treinado carregado com sucesso.')
 
-        print('[INFO] Carregando modelo treinado...')
-        model.load_state_dict(torch.load(TRAINED_MODEL_PATH))
-        print('[INFO] Modelo treinado carregado com sucesso.')
+        except FileNotFoundError:
+            print (
+                f'[WARNING] Modelo treinado não encontrado em: {TRAINED_MODEL_PATH}. Usando modelo padrão'
+            )
+            turn_required_grads(model)
+
+        
         return model
     else:
+        turn_required_grads(model)
+        
+def turn_required_grads(model):
         """
-    Carrega o modelo base do Whisper e habilita o cálculo de gradientes.
+    Retorna o modelo base do Whisper com o cálculo de gradientes habilitado.
     """
-        print('[INFO] Carregando o modelo base Whisper...')
+        print(f'[INFO] Carregando o modelo Whisper {Config.WHISPER_MODEL} ...')
         # Habilitar cálculo de gradientes para ajuste fino
         for param in model.parameters():
             param.requires_grad = True
 
-        print('[INFO] Modelo base Whisper carregado com sucesso.')
+        print(f'[INFO] Modelo Whisper {Config.WHISPER_MODEL} carregado com sucesso.')
         return model
+
+if __name__=='__main__':
+     load_model(True)
