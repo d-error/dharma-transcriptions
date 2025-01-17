@@ -1,6 +1,6 @@
 import os
-from dharma_transcriptions.config import Config
 
+from dharma_transcriptions.config import Config
 from dharma_transcriptions.utils import format_time
 from dharma_transcriptions.whisper_core import load_model
 

@@ -66,7 +66,7 @@ def register_routes(app):
             )
             print(f'[INFO] Transcrição concluída: {transcript_file}')
             print(f'[INFO] Subtítulos gerados: {subtitle_file}')
-            
+
             print('[INFO] Salvando transcrição no banco de dados...')
             save_transcription_to_db(video_title, transcript_file)
             print('[INFO] Transcrição salva no banco de dados.')
