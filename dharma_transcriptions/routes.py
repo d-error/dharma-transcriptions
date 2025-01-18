@@ -55,13 +55,13 @@ def register_routes(app):
 
         try:
             print('[INFO] Iniciando download do áudio...')
-            output_file, video_title = download_audio(youtube_url)
+            output_file, video_title, file_folder = download_audio(youtube_url)
             print(f'[INFO] Áudio baixado: {output_file}')
 
             print('[INFO] Iniciando transcrição...')
             transcript_file, subtitle_file = (
                 transcribe_audio_and_generate_subtitles(
-                    output_file, video_title
+                    output_file, video_title, file_folder
                 )
             )
             print(f'[INFO] Transcrição concluída: {transcript_file}')

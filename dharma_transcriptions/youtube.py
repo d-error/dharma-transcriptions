@@ -1,9 +1,9 @@
 import os
 
 import yt_dlp
+from yt_dlp.utils import sanitize_filename
 
 from dharma_transcriptions.config import Config
-from yt_dlp.utils import sanitize_filename
 
 
 def download_audio(youtube_url):
@@ -12,7 +12,9 @@ def download_audio(youtube_url):
     ffmpeg_location = Config.FFMPEG_LOCATION
     ydl_opts = {
         'format': 'bestaudio/best',
-        
+        'outtmpl': os.path.join(
+            output_folder, sanitize_filename('%(title)s'), '%(title)s.%(ext)s'
+        ),
         'postprocessors': [
             {
                 'key': 'FFmpegExtractAudio',
@@ -20,7 +22,7 @@ def download_audio(youtube_url):
                 'preferredquality': '192',
             },
         ],
-        'ffmpeg_location': ffmpeg_location
+        'ffmpeg_location': ffmpeg_location,
     }
 
     try:
@@ -31,24 +33,29 @@ def download_audio(youtube_url):
             # pra definir template do download
 
             sanitized_title = get_sanitized_title(info_dict)
-            outtmpl_filepath = get_outtmpl_filepath(sanitized_title, output_folder)
-            audio_file = outtmpl_filepath.replace("%(ext)s", 'mp3')
-        
+            outtmpl_filepath = get_outtmpl_filepath(
+                sanitized_title, output_folder
+            )
+            audio_file = outtmpl_filepath.replace('%(ext)s', 'mp3')
+            file_folder = os.path.join(output_folder, sanitized_title)
+
             ydl_opts['outtmpl'] = outtmpl_filepath
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                ydl.download([youtube_url])
-            
-            return (
-                audio_file,
-                sanitized_title,
-            )  # Retorna apenas o caminho do arquivo """
+
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl_sanitized_path:
+                ydl_sanitized_path.download([youtube_url])
+
+            return (audio_file, sanitized_title, file_folder)
     except Exception as e:
         raise Exception(f'Erro ao baixar ou converter áudio: {str(e)}') from e
-    
+
+
 def get_sanitized_title(info_dict):
     raw_title = info_dict.get('title', 'video')
     return sanitize_filename(raw_title.lower()).replace(' ', '_')
 
+
 def get_outtmpl_filepath(sanitized_title, output_folder):
-    outtmpl_filepath = os.path.join(output_folder, sanitized_title, f'{sanitized_title}.%(ext)s')
+    outtmpl_filepath = os.path.join(
+        output_folder, sanitized_title, f'{sanitized_title}.%(ext)s'
+    )
     return outtmpl_filepath
