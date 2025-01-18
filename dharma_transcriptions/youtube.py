@@ -30,19 +30,25 @@ def download_audio(youtube_url):
             )  # TODO: tem uma opção -o no yt-dlp
             # pra definir template do download
 
-            raw_title = info_dict.get('title', 'video')
-            sanitized_title = sanitize_filename(raw_title.lower()).replace(' ', '_')
-            outtmpl_filepath = os.path.join(output_folder, sanitized_title, f'{sanitized_title}.%(ext)s')
-            ydl_opts['outtmpl'] = outtmpl_filepath
+            sanitized_title = get_sanitized_title(info_dict)
+            outtmpl_filepath = get_outtmpl_filepath(sanitized_title, output_folder)
             audio_file = outtmpl_filepath.replace("%(ext)s", 'mp3')
         
+            ydl_opts['outtmpl'] = outtmpl_filepath
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([youtube_url])
             
-
             return (
                 audio_file,
                 sanitized_title,
             )  # Retorna apenas o caminho do arquivo """
     except Exception as e:
         raise Exception(f'Erro ao baixar ou converter áudio: {str(e)}') from e
+    
+def get_sanitized_title(info_dict):
+    raw_title = info_dict.get('title', 'video')
+    return sanitize_filename(raw_title.lower()).replace(' ', '_')
+
+def get_outtmpl_filepath(sanitized_title, output_folder):
+    outtmpl_filepath = os.path.join(output_folder, sanitized_title, f'{sanitized_title}.%(ext)s')
+    return outtmpl_filepath
