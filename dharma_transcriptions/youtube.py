@@ -10,26 +10,11 @@ def download_audio(youtube_url):
     output_folder = Config.OUTPUT_FOLDER
     os.makedirs(output_folder, exist_ok=True)
     ffmpeg_location = Config.FFMPEG_LOCATION
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'outtmpl': os.path.join(
-            output_folder, sanitize_filename('%(title)s'), '%(title)s.%(ext)s'
-        ),
-        'postprocessors': [
-            {
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            },
-        ],
-        'ffmpeg_location': ffmpeg_location,
-    }
 
     try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info_dict = ydl.extract_info(
-                youtube_url, download=True
-            )  # TODO: tem uma opção -o no yt-dlp
+        with yt_dlp.YoutubeDL() as ydl:
+            info_dict = ydl.extract_info( youtube_url, download=False)  
+            # TODO: tem uma opção -o no yt-dlp
             # pra definir template do download
 
             sanitized_title = get_sanitized_title(info_dict)
@@ -39,9 +24,19 @@ def download_audio(youtube_url):
             file_folder = os.path.join(output_folder, sanitized_title)
             audio_file = outtmpl_filepath.replace('%(ext)s', 'mp3')
 
-            ydl_opts['outtmpl'] = outtmpl_filepath
-
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl_sanitized_path:
+            options = {
+                'format': 'bestaudio/best',
+                'outtmpl': outtmpl_filepath,
+                'postprocessors': [
+                    {
+                        'key': 'FFmpegExtractAudio',
+                        'preferredcodec': 'mp3',
+                        'preferredquality': '192',
+                    },
+                ],
+                'ffmpeg_location': ffmpeg_location,
+            }
+            with yt_dlp.YoutubeDL(options) as ydl_sanitized_path:
                 ydl_sanitized_path.download([youtube_url])
 
             #TODO upload to s3?

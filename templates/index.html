@@ -15,9 +15,15 @@
   </form>
   <div id="status" style="display: block; margin-top: 20px; color: white"></div>
   <div id="links" style="display: none; margin-top: 20px">
-    <p id="audio-link" style="display: block; margin-bottom: 10px"></p>
-    <p id="transcript-link" style="display: block; margin-bottom: 10px"></p>
-    <p id="subtitle-link" style="display: block"></p>
+    <p style="display: block; margin-bottom: 10px">
+      mp3 salvo em <code id="audio-link"></code>
+    </p>
+    <p style="display: block; margin-bottom: 10px">
+      transcrição salva em <code id="transcript-link"></code>
+    </p>
+    <p style="display: block">
+      legenda salva em <code id="subtitle-link"></code>
+    </p>
   </div>
 </div>
 
@@ -43,13 +49,12 @@
         if (data.success) {
           statusDiv.textContent =
             "Processamento concluído! Links disponíveis abaixo:";
-          document.getElementById("audio-link").innerText =
-            "mp3 salvo em " + data.audio_file;
+          document.getElementById("audio-link").innerText = data.audio_file;
           document.getElementById("transcript-link").innerText =
-            "transcrição salva em " + data.transcript_file;
+            data.transcript_file;
           document.getElementById("subtitle-link").innerText =
-            "legenda salva em " + data.subtitle_file;
-          linksDiv.style.display = "block"; // Exibe os links
+            data.subtitle_file;
+          linksDiv.style.display = "block";
         } else {
           statusDiv.textContent = "Erro: " + data.error;
         }
