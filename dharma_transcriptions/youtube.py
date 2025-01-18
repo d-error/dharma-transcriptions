@@ -1,7 +1,7 @@
 import os
 
 import yt_dlp
-from yt_dlp.utils import sanitize_filename
+from dharma_transcriptions.utils import sanitize_filename
 
 from dharma_transcriptions.config import Config
 
@@ -37,6 +37,7 @@ def download_audio(youtube_url):
                 sanitized_title, output_folder
             )
             audio_file = outtmpl_filepath.replace('%(ext)s', 'mp3')
+            print(">>>>>", audio_file.replace(" ", "_"))
             file_folder = os.path.join(output_folder, sanitized_title)
 
             ydl_opts['outtmpl'] = outtmpl_filepath
@@ -51,7 +52,7 @@ def download_audio(youtube_url):
 
 def get_sanitized_title(info_dict):
     raw_title = info_dict.get('title', 'video')
-    return sanitize_filename(raw_title.lower()).replace(' ', '_')
+    return sanitize_filename(raw_title.lower())
 
 
 def get_outtmpl_filepath(sanitized_title, output_folder):
