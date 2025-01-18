@@ -2,7 +2,9 @@ import os
 
 from dotenv import load_dotenv
 
-load_dotenv()
+rootPath = os.path.dirname(os.path.dirname(__file__))
+
+load_dotenv(rootPath)
 
 class Config:
     BASE_PATH = os.getenv('BASE_PATH', default=__file__)

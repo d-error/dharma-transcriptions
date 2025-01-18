@@ -2,7 +2,7 @@ import re
 
 
 def sanitize_filename(filename):
-    return re.sub(r'[<>:"/\\|?*]', '_', filename)
+    return re.sub(r'[<>:"/\\|?* ]', '_', filename)
 
 
 def format_time(seconds):
