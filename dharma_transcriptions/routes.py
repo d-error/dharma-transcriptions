@@ -55,33 +55,27 @@ def register_routes(app):
 
         try:
             print('[INFO] Iniciando download do áudio...')
-            output_file, video_title, file_folder = download_audio(youtube_url)
-            print(f'[INFO] Áudio baixado: {output_file}')
+            audio_file, file_title, file_folder = download_audio(youtube_url)
+            print(f'[INFO] Áudio baixado: {audio_file}')
 
             print('[INFO] Iniciando transcrição...')
             transcript_file, subtitle_file = (
                 transcribe_audio_and_generate_subtitles(
-                    output_file, video_title, file_folder
+                    audio_file, file_title, file_folder
                 )
             )
             print(f'[INFO] Transcrição concluída: {transcript_file}')
             print(f'[INFO] Subtítulos gerados: {subtitle_file}')
 
             print('[INFO] Salvando transcrição no banco de dados...')
-            save_transcription_to_db(video_title, transcript_file)
+            save_transcription_to_db(file_title, transcript_file)
             print('[INFO] Transcrição salva no banco de dados.')
 
             return jsonify({
                 'success': True,
-                'audio_file': (
-                    f'/download/audio/{sanitize_filename(video_title)}'
-                ),
-                'transcript_file': (
-                    f'/download/transcription/{sanitize_filename(video_title)}'
-                ),
-                'subtitle_file': (
-                    f'/download/subtitles/{sanitize_filename(video_title)}'
-                ),
+                'audio_file': audio_file,
+                'transcript_file': transcript_file,
+                'subtitle_file': subtitle_file,
             })
 
         except Exception as e:

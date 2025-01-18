@@ -36,23 +36,26 @@ def download_audio(youtube_url):
             outtmpl_filepath = get_outtmpl_filepath(
                 sanitized_title, output_folder
             )
-            audio_file = outtmpl_filepath.replace('%(ext)s', 'mp3')
-            print(">>>>>", audio_file.replace(" ", "_"))
             file_folder = os.path.join(output_folder, sanitized_title)
+            audio_file = outtmpl_filepath.replace('%(ext)s', 'mp3')
 
             ydl_opts['outtmpl'] = outtmpl_filepath
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl_sanitized_path:
                 ydl_sanitized_path.download([youtube_url])
 
-            return (audio_file, sanitized_title, file_folder)
+            #TODO upload to s3?
+            absolute_audio_file_path = os.path.abspath(audio_file)
+            absolute_folder_path = os.path.abspath(file_folder)
+
+            return (absolute_audio_file_path, sanitized_title, absolute_folder_path)
     except Exception as e:
         raise Exception(f'Erro ao baixar ou converter áudio: {str(e)}') from e
 
 
 def get_sanitized_title(info_dict):
     raw_title = info_dict.get('title', 'video')
-    return sanitize_filename(raw_title.lower())
+    return sanitize_filename(raw_title)
 
 
 def get_outtmpl_filepath(sanitized_title, output_folder):
