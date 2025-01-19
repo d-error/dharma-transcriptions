@@ -1,3 +1,4 @@
+import os
 from flask import (
     jsonify,
     render_template,
@@ -14,6 +15,9 @@ from dharma_transcriptions.transcription import (
 )
 from dharma_transcriptions.utils import sanitize_filename
 from dharma_transcriptions.youtube import download_audio
+from dharma_transcriptions.config import Config
+from dharma_transcriptions.whisper_training import train_from_files
+
 
 
 def register_routes(app):
@@ -81,3 +85,48 @@ def register_routes(app):
         except Exception as e:
             print(f'[ERROR] Erro ao processar o vídeo: {str(e)}')
             return jsonify({'success': False, 'error': str(e)})
+
+    @app.route('/training')
+    def render():
+        return render_template('training.html')
+    
+    @app.route('/train', methods=['POST'])
+    def train():
+        try:
+            save_files(request)
+            return jsonify({'success': True})
+        except Exception as e:
+            print(f'[ERROR] Erro ao salvar o arquivo: {str(e)}')
+            return jsonify({'success': False, 'error': str(e)})
+        
+    def save_files(request):
+        output_folder = Config.OUTPUT_FOLDER
+        files = []
+        training_folder = os.path.join(output_folder, 'training')
+        os.makedirs(training_folder, exist_ok=True)
+
+        for key in request.files:
+            files.append({
+                'key': key,
+                'file': request.files[key]
+            })
+        
+        srt_path, reviewed_srt_path = getPaths(files, training_folder)
+        train_from_files(srt_path, reviewed_srt_path)
+
+    def getPaths(files, training_folder):
+        print(files)
+        srt_path = None
+        reviewed_srt_path = None
+        for file in files:
+            file_data = file['file']
+            filename = sanitize_filename(file_data.filename)
+            file_path = os.path.join(training_folder, filename)
+
+            reviewed_srt_path = file_path if file["key"] == "reviewed_srt" else reviewed_srt_path
+            srt_path = file_path if file["key"] == "srt" else srt_path
+
+            filename = sanitize_filename(file_data.filename)
+            file_data.save(file_path)
+            print(f'[INFO] Arquivo salvo: {file_path}')
+        return (srt_path, reviewed_srt_path)

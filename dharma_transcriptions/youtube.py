@@ -39,7 +39,7 @@ def download_audio(youtube_url):
             with yt_dlp.YoutubeDL(options) as ydl_sanitized_path:
                 ydl_sanitized_path.download([youtube_url])
 
-            #TODO upload to s3?
+            #TODO upload to s3? while it does not happen we are giving the path for the saved file locally
             absolute_audio_file_path = os.path.abspath(audio_file)
             absolute_folder_path = os.path.abspath(file_folder)
 
