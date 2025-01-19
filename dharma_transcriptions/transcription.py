@@ -1,10 +1,12 @@
 import os
 
+from dharma_transcriptions.config import Config
 from dharma_transcriptions.utils import format_time
 from dharma_transcriptions.whisper_core import load_model
 
 
 def transcribe_audio_and_generate_subtitles(audio_file, video_title):
+    output_folder = Config.OUTPUT_FOLDER
     if not os.path.exists(audio_file):
         raise FileNotFoundError(
             f'Arquivo de áudio não encontrado: {audio_file}'
@@ -18,7 +20,7 @@ def transcribe_audio_and_generate_subtitles(audio_file, video_title):
     result = model.transcribe(audio_file, fp16=False)
     print('[INFO] Transcrição concluída com sucesso.')
 
-    transcript_folder = os.path.join('downloads', video_title)
+    transcript_folder = os.path.join(output_folder, video_title)
     os.makedirs(transcript_folder, exist_ok=True)
 
     transcript_file_path = os.path.join(transcript_folder, 'transcription.txt')

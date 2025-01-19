@@ -7,6 +7,12 @@ def test_sanitize_filename():
     assert sanitize_filename('file:name') == 'file_name'
     assert sanitize_filename('file\\path') == 'file_path'
     assert sanitize_filename('file|name') == 'file_name'
+    assert (
+        sanitize_filename(
+            'Alan Wallace ｜ Conselho para quem deseja superar as aflições'
+        )
+        == 'Alan Wallace _ Conselho para quem deseja superar as aflições'
+    )
 
     # Test with no invalid characters
     assert sanitize_filename('valid_filename') == 'valid_filename'
