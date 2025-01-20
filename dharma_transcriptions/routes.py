@@ -128,4 +128,5 @@ def register_routes(app):
             srt_path = file_path if file["key"] == "srt" else srt_path
 
             filename = sanitize_filename(file_data.filename)
+            file_data.save(file_path)
         return (srt_path, audio_path)
