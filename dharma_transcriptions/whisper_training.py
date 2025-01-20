@@ -143,7 +143,8 @@ def save_finetuned_model(model):
     torch.save(model.state_dict(), TRAINED_MODEL_PATH)
     print(f'[INFO] Modelo treinado salvo em: {TRAINED_MODEL_PATH}')
 
-def train_from_files(srt_path, reviewed_srt_path):
+def train_from_files(srt_path, audio_path):
+    print(srt_path, audio_path)
     model = load_model()
     print('[INFO] Preparando os dados para o treinamento...')
     optimizer = get_optimizer(model)
@@ -152,21 +153,21 @@ def train_from_files(srt_path, reviewed_srt_path):
     training_pairs = []
     training_pairs.append((
         srt_path,
-        reviewed_srt_path,
+        audio_path,
     ))
     print(f'[INFO] Total de pares para treinamento: {len(training_pairs)}')
 
     # Loop de treinamento
-    """ for epoch in range(1):  # Apenas 1 época para demonstração
+    for epoch in range(1):  # Apenas 1 época para demonstração
         print(f'[INFO] Época {epoch + 1}')
-        for srt, review in training_pairs:
-            print(f'[DEBUG] Treinando com: {srt} e {review}')
+        for srt, audio in training_pairs:
+            print(f'[DEBUG] Treinando com: {srt} e {audio}')
             # Processar áudio e texto
             try:
                 with (
                     open(srt, 'r', encoding='utf-8') as srt_file,
                     open(
-                        review, 'r', encoding='utf-8'
+                        audio, 'r', encoding='utf-8'
                     ) as review_file,
                 ):
                     srt_text = srt_file.read()
@@ -206,7 +207,7 @@ def train_from_files(srt_path, reviewed_srt_path):
                 with (
                     open(srt, 'r', encoding='utf-8') as srt_file,
                     open(
-                        review, 'r', encoding='utf-8'
+                        audio, 'r', encoding='utf-8'
                     ) as review_file,
                 ):
                     srt_text = srt_file.read()
@@ -243,7 +244,7 @@ def train_from_files(srt_path, reviewed_srt_path):
                 )
 
     print('[INFO] Fine-tuning concluído.')
-    return model """
+    return model
 
 def get_optimizer(model):
     # Configuração do otimizador e perda

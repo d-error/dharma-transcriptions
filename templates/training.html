@@ -4,12 +4,12 @@
   <h1>Training</h1>
   <p>
     <form onsubmit="train(event)" enctype="multipart/form-data">
-      <label for="srt">Select an SRT file to train the model:</label>
+      <label for="audio">Select the audio file to train the model:</label>
       <br>
-      <input type="file" id="srt" name="srt" accept=".srt" required/>
+      <input type="file" id="audio" name="audio" accept="audio/*" required/>
       <br>
       <label for="srt">Select the reviewd SRT file to train the model:</label>
-      <input type="file" id="reviewed_srt" name="reviewed_srt" accept=".srt" required/>
+      <input type="file" id="srt" name="srt" accept=".srt" required/>
       <br>
       <input type="submit" value="Submit"/>
     </form>

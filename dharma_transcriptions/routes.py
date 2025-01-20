@@ -111,22 +111,21 @@ def register_routes(app):
                 'file': request.files[key]
             })
         
-        srt_path, reviewed_srt_path = getPaths(files, training_folder)
-        train_from_files(srt_path, reviewed_srt_path)
+        srt_path, audio_path = getPaths(files, training_folder)
+        train_from_files(srt_path, audio_path)
 
     def getPaths(files, training_folder):
         print(files)
         srt_path = None
-        reviewed_srt_path = None
+        audio_path = None
         for file in files:
             file_data = file['file']
+            print("file", file)
             filename = sanitize_filename(file_data.filename)
             file_path = os.path.join(training_folder, filename)
 
-            reviewed_srt_path = file_path if file["key"] == "reviewed_srt" else reviewed_srt_path
+            audio_path = file_path if file["key"] == "audio" else audio_path
             srt_path = file_path if file["key"] == "srt" else srt_path
 
             filename = sanitize_filename(file_data.filename)
-            file_data.save(file_path)
-            print(f'[INFO] Arquivo salvo: {file_path}')
-        return (srt_path, reviewed_srt_path)
+        return (srt_path, audio_path)
