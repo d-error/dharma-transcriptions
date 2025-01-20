@@ -168,17 +168,17 @@ def train_from_files(srt_path, audio_path):
                     open(srt, 'r', encoding='utf-8') as srt_file,
                     open(
                         audio, 'r', encoding='utf-8'
-                    ) as review_file,
+                    ) as audio_file,
                 ):
-                    srt_text = srt_file.read()
-                    review_text = review_file.read()
+                    srt_read = srt_file.read()
+                    audio_read = audio_file.read()
 
                 audio_tensor = whisper.log_mel_spectrogram(
-                    torch.tensor([float(x) for x in srt_text.split()])
+                    torch.tensor([float(x) for x in srt_read.split()])
                 )
 
                 # Codificar texto corrigido
-                target_tokens = tokenizer.encode(review_text)
+                target_tokens = tokenizer.encode(audio_read)
 
                 # Ajustar formatos para entrada e saída
                 inputs = audio_tensor.unsqueeze(0)  # Adicionar dimensão batch
@@ -199,7 +199,7 @@ def train_from_files(srt_path, audio_path):
 
             except Exception:
                 print(
-                    '[ERRO] Falha durante o treinamentopara {bruto_path}: {e}'
+                    '[ERRO] Falha durante o treinamentopara {audio_path}: {e}'
                 )
 
             # Processar áudio e texto
@@ -208,18 +208,18 @@ def train_from_files(srt_path, audio_path):
                     open(srt, 'r', encoding='utf-8') as srt_file,
                     open(
                         audio, 'r', encoding='utf-8'
-                    ) as review_file,
+                    ) as audio_file,
                 ):
-                    srt_text = srt_file.read()
-                    review_text = review_file.read()
+                    srt_read = srt_file.read()
+                    audio_read = audio_file.read()
 
                 # Carregar áudio bruto como mel-espectrograma
                 audio_tensor = whisper.log_mel_spectrogram(
-                    torch.tensor([float(x) for x in srt_text.split()])
+                    torch.tensor([float(x) for x in srt_read.split()])
                 )
 
                 # Codificar texto corrigido
-                target_tokens = tokenizer.encode(review_text)
+                target_tokens = tokenizer.encode(audio_read)
 
                 # Ajustar formatos para entrada e saída
                 inputs = audio_tensor.unsqueeze(0)  # Adicionar dimensão batch
