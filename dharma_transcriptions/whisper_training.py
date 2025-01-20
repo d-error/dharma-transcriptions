@@ -174,11 +174,11 @@ def train_from_files(srt_path, audio_path):
                     audio_read = audio_file.read()
 
                 audio_tensor = whisper.log_mel_spectrogram(
-                    torch.tensor([float(x) for x in srt_read.split()])
+                    torch.tensor([float(x) for x in audio_read.split()])
                 )
 
                 # Codificar texto corrigido
-                target_tokens = tokenizer.encode(audio_read)
+                target_tokens = tokenizer.encode(srt_read)
 
                 # Ajustar formatos para entrada e saída
                 inputs = audio_tensor.unsqueeze(0)  # Adicionar dimensão batch
