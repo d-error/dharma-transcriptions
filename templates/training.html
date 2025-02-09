@@ -1,0 +1,37 @@
+<!-- templates/index.html -->
+{% extends 'base.html' %} {% block content %}
+<div class="container">
+  <h1>Training</h1>
+  <p>
+    <form onsubmit="train(event)" enctype="multipart/form-data">
+      <label for="audio">Select the audio file to train the model:</label>
+      <br>
+      <input type="file" id="audio" name="audio" accept="audio/*" required/>
+      <br>
+      <label for="srt">Select the reviewd SRT or TXT file to train the model:</label>
+      <input type="file" id="srt" name="srt" accept=".srt,.txt" required/>
+      <br>
+      <input type="submit" value="Submit"/>
+    </form>
+  </p>
+</div>
+<script>
+  function train(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    fetch("/train", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          alert("Training completed successfully!");
+        } else {
+          alert("An error occurred during training.");
+        }
+      });
+  }
+</script>
+
+{% endblock %}

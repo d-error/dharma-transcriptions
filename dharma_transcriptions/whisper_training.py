@@ -20,18 +20,11 @@ CORRIGIDOS_PATH = os.path.join(BASE_PATH, 'referencia_corrigida')
 def fine_tune_model(model, brutos_dir, corrigidos_dir):
     """Realiza o fine-tuning do modelo Whisper usando os dados fornecidos."""
     print('[INFO] Preparando os dados para o treinamento...')
-
-    # Configuração do otimizador e perda
-    optimizer = torch.optim.Adam(
-        model.parameters(), lr=1e-5
-    )  # Taxa de aprendizado baixa
+    optimizer = get_optimizer(model)
     loss_function = torch.nn.CrossEntropyLoss()
-
-    # Tokenizer para codificar textos corrigidos
     tokenizer = get_tokenizer(multilingual=True)
-
-    # Listar pares de arquivos para treinamento
     training_pairs = []
+
     for bruto_file in os.listdir(brutos_dir):
         if not bruto_file.endswith('.txt'):
             continue
@@ -150,6 +143,115 @@ def save_finetuned_model(model):
     torch.save(model.state_dict(), TRAINED_MODEL_PATH)
     print(f'[INFO] Modelo treinado salvo em: {TRAINED_MODEL_PATH}')
 
+def train_from_files(srt_path, audio_path):
+    print(srt_path, audio_path)
+    model = load_model()
+    print('[INFO] Preparando os dados para o treinamento...')
+    optimizer = get_optimizer(model)
+    loss_function = torch.nn.CrossEntropyLoss()
+    tokenizer = get_tokenizer(multilingual=True)
+    training_pairs = []
+    training_pairs.append((
+        srt_path,
+        audio_path,
+    ))
+    print(f'[INFO] Total de pares para treinamento: {len(training_pairs)}')
+
+    # Loop de treinamento
+    for epoch in range(1):  # Apenas 1 época para demonstração
+        print(f'[INFO] Época {epoch + 1}')
+        for srt, audio in training_pairs:
+            print(f'[DEBUG] Treinando com: {srt} e {audio}')
+            # Processar áudio e texto
+            try:
+                with (
+                    open(srt, 'r', encoding='utf-8') as srt_file,
+                    open(
+                        audio, 'r', encoding='utf-8'
+                    ) as audio_file,
+                ):
+                    srt_read = srt_file.read()
+                    audio_read = audio_file.read()
+
+                audio_tensor = whisper.log_mel_spectrogram(
+                    torch.tensor([float(x) for x in audio_read.split()])
+                )
+
+                # Codificar texto corrigido
+                target_tokens = tokenizer.encode(srt_read)
+
+                # Ajustar formatos para entrada e saída
+                inputs = audio_tensor.unsqueeze(0)  # Adicionar dimensão batch
+                targets = torch.tensor(target_tokens).unsqueeze(0)
+
+                # Prever saída
+                outputs = model.decoder(inputs, targets[:, :-1])
+
+                # Calcular perda
+                loss = loss_function(
+                    outputs.view(-1, outputs.size(-1)), targets.view(-1)
+                )
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+                print(f'[INFO] Loss: {loss.item():.4f}')
+
+            except Exception:
+                print(
+                    '[ERRO] Falha durante o treinamentopara {audio_path}: {e}'
+                )
+
+            # Processar áudio e texto
+            try:
+                with (
+                    open(srt, 'r', encoding='utf-8') as srt_file,
+                    open(
+                        audio, 'r', encoding='utf-8'
+                    ) as audio_file,
+                ):
+                    srt_read = srt_file.read()
+                    audio_read = audio_file.read()
+
+                # Carregar áudio bruto como mel-espectrograma
+                audio_tensor = whisper.log_mel_spectrogram(
+                    torch.tensor([float(x) for x in srt_read.split()])
+                )
+
+                # Codificar texto corrigido
+                target_tokens = tokenizer.encode(audio_read)
+
+                # Ajustar formatos para entrada e saída
+                inputs = audio_tensor.unsqueeze(0)  # Adicionar dimensão batch
+                targets = torch.tensor(target_tokens).unsqueeze(0)
+
+                # Prever saída
+                outputs = model.decoder(inputs, targets[:, :-1])
+
+                # Calcular perda
+                loss = loss_function(
+                    outputs.view(-1, outputs.size(-1)), targets.view(-1)
+                )
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+                print(f'[INFO] Loss: {loss.item():.4f}')
+
+            except Exception as e:
+                print(
+                    f'[ERRO] Falha durante treinamento para {srt}: {e}'
+                )
+
+    print('[INFO] Fine-tuning concluído.')
+    return model
+
+def get_optimizer(model):
+    # Configuração do otimizador e perda
+    optimizer = torch.optim.Adam(
+        model.parameters(), lr=1e-5
+    )
+    return optimizer
 
 if __name__ == '__main__':
     try:
