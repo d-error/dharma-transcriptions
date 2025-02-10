@@ -5,6 +5,7 @@ import whisper
 from whisper.tokenizer import get_tokenizer
 
 from dharma_transcriptions.whisper_core import load_model
+import wave
 
 # Caminho para salvar o modelo treinado
 TRAINED_MODEL_PATH = os.path.join('trained_models', 'whisper_finetuned.pt')
@@ -143,109 +144,54 @@ def save_finetuned_model(model):
     torch.save(model.state_dict(), TRAINED_MODEL_PATH)
     print(f'[INFO] Modelo treinado salvo em: {TRAINED_MODEL_PATH}')
 
+def read_audio_file(audio_path):
+        """Reads an audio file and returns the audio data and frame rate."""
+        with wave.open(audio_path, 'rb') as wf:
+            frame_rate = wf.getframerate()
+            audio_data = wf.readframes(wf.getnframes())
+        return audio_data, frame_rate
+
+def split_audio_by_timestamps(audio_data, frame_rate, timestamps):
+    chunks = []
+    for start, end in timestamps:
+        start_frame = int(start * frame_rate)
+        end_frame = int(end * frame_rate)
+        chunks.append(audio_data[start_frame * 2:end_frame * 2])  # 2 bytes per frame
+    return chunks
+
+def timestamps_from_line(line):
+    start, end = line.split(' --> ')
+    start = start.replace(',', '.')
+    end = end.replace(',', '.')
+    return (start[:-3]), (end[:-3])
+
+def split_srt_by_timestamps(srt_path, audio_path):
+    audio_data, frame_rate = read_audio_file(audio_path)
+    with open(srt_path, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+    chunk_lines = []
+    timestamp = None
+    text =  None
+    for line in lines:
+        if line.startswith('0'):
+            start_time, end_time = timestamps_from_line(line)
+            timestamp = (start_time, end_time)
+            start_frame = int(start_time * frame_rate)
+            end_frame = int(end_time * frame_rate)
+        if line.startswith(" "):
+            text = line
+        chunk_lines.append({    
+            'text': text,
+            'timestamp': timestamp,
+            'audio': audio_data[start_frame * 2:end_frame * 2]
+        })            
+    print(chunk_lines)
+    return chunk_lines
+
 def train_from_files(srt_path, audio_path):
+    split_srt_by_timestamps(srt_path, audio_path)
     print(srt_path, audio_path)
-    model = load_model()
-    print('[INFO] Preparando os dados para o treinamento...')
-    optimizer = get_optimizer(model)
-    loss_function = torch.nn.CrossEntropyLoss()
-    tokenizer = get_tokenizer(multilingual=True)
-    training_pairs = []
-    training_pairs.append((
-        srt_path,
-        audio_path,
-    ))
-    print(f'[INFO] Total de pares para treinamento: {len(training_pairs)}')
-
-    # Loop de treinamento
-    for epoch in range(1):  # Apenas 1 época para demonstração
-        print(f'[INFO] Época {epoch + 1}')
-        for srt, audio in training_pairs:
-            print(f'[DEBUG] Treinando com: {srt} e {audio}')
-            # Processar áudio e texto
-            try:
-                with (
-                    open(srt, 'r', encoding='utf-8') as srt_file,
-                    open(
-                        audio, 'r', encoding='utf-8'
-                    ) as audio_file,
-                ):
-                    srt_read = srt_file.read()
-                    audio_read = audio_file.read()
-
-                audio_tensor = whisper.log_mel_spectrogram(
-                    torch.tensor([float(x) for x in audio_read.split()])
-                )
-
-                # Codificar texto corrigido
-                target_tokens = tokenizer.encode(srt_read)
-
-                # Ajustar formatos para entrada e saída
-                inputs = audio_tensor.unsqueeze(0)  # Adicionar dimensão batch
-                targets = torch.tensor(target_tokens).unsqueeze(0)
-
-                # Prever saída
-                outputs = model.decoder(inputs, targets[:, :-1])
-
-                # Calcular perda
-                loss = loss_function(
-                    outputs.view(-1, outputs.size(-1)), targets.view(-1)
-                )
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
-
-                print(f'[INFO] Loss: {loss.item():.4f}')
-
-            except Exception:
-                print(
-                    '[ERRO] Falha durante o treinamentopara {audio_path}: {e}'
-                )
-
-            # Processar áudio e texto
-            try:
-                with (
-                    open(srt, 'r', encoding='utf-8') as srt_file,
-                    open(
-                        audio, 'r', encoding='utf-8'
-                    ) as audio_file,
-                ):
-                    srt_read = srt_file.read()
-                    audio_read = audio_file.read()
-
-                # Carregar áudio bruto como mel-espectrograma
-                audio_tensor = whisper.log_mel_spectrogram(
-                    torch.tensor([float(x) for x in srt_read.split()])
-                )
-
-                # Codificar texto corrigido
-                target_tokens = tokenizer.encode(audio_read)
-
-                # Ajustar formatos para entrada e saída
-                inputs = audio_tensor.unsqueeze(0)  # Adicionar dimensão batch
-                targets = torch.tensor(target_tokens).unsqueeze(0)
-
-                # Prever saída
-                outputs = model.decoder(inputs, targets[:, :-1])
-
-                # Calcular perda
-                loss = loss_function(
-                    outputs.view(-1, outputs.size(-1)), targets.view(-1)
-                )
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
-
-                print(f'[INFO] Loss: {loss.item():.4f}')
-
-            except Exception as e:
-                print(
-                    f'[ERRO] Falha durante treinamento para {srt}: {e}'
-                )
-
-    print('[INFO] Fine-tuning concluído.')
-    return model
-
+ 
 def get_optimizer(model):
     # Configuração do otimizador e perda
     optimizer = torch.optim.Adam(
